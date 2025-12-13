@@ -1,0 +1,16 @@
+.{
+    .name = .vulkan_tech_demo_2,
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .vulkan_headers = .{
+            .url = "git+https://github.com/KhronosGroup/Vulkan-Headers.git#8a1e5840e7833a90b79c3fddb639f57c3772a641",
+            .hash = "N-V-__8AAI-YKgKAmifzX8DTHUjTjfP7BmNncWcQYTaw9tpW",
+        },
+        .glfw = .{
+            .url = "git+https://github.com/glfw/glfw.git#dbadda26835ec5089ef922e6c290bcf58cf12056",
+            .hash = "N-V-__8AACgKSgBZuDlGX9ua8dZkoUYmxa3ienGJRyNYw-Jl",
+        },
+    },
+    .paths = .{""},
+    .fingerprint = 0xee58723ce0289c07,
+}
