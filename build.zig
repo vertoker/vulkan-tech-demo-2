@@ -9,8 +9,7 @@ const zig_version = std.SemanticVersion{
 
 comptime {
     const zig_version_eq = zig_version.major == builtin.zig_version.major and
-        zig_version.minor == builtin.zig_version.minor and
-        (zig_version.patch == builtin.zig_version.patch);
+        zig_version.minor == builtin.zig_version.minor and zig_version.patch == builtin.zig_version.patch;
 
     if (!zig_version_eq) {
         @compileError(std.fmt.comptimePrint(
@@ -32,6 +31,10 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    // Modules
+
+    const vulkanModule = createVulkanModule(b, target);
+
     // Executable
 
     const exe = b.addExecutable(.{
@@ -41,7 +44,9 @@ pub fn build(b: *std.Build) void {
             // .link_libc = true,
             .target = target,
             .optimize = optimize,
-            // .imports = &imports,
+            .imports = &[_]std.Build.Module.Import {
+                .{ .name = "vulkan", .module = vulkanModule },
+            },
         }),
     });
 
@@ -63,4 +68,24 @@ pub fn build(b: *std.Build) void {
 
     const run_exe_tests = b.addRunArtifact(exe_tests);
     tests_step.dependOn(&run_exe_tests.step);
+}
+
+fn createModule(b: *std.Build, name: []const u8, path: []const u8, target: std.Build.ResolvedTarget) *std.Build.Module {
+    const module = b.addModule(name, .{
+        .root_source_file = b.path(path),
+        .target = target,
+    });
+    return module;
+}
+
+fn createVulkanModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Build.Module {
+    const vulkan_headers = b.dependency("vulkan_headers", .{});
+    const step = b.addTranslateC(.{
+        .root_source_file = vulkan_headers.path("include/vulkan/vulkan.h"),
+        .optimize = .ReleaseFast,
+        .target = target,
+    });
+    step.addIncludePath(vulkan_headers.path("include/"));
+
+    return step.createModule();
 }

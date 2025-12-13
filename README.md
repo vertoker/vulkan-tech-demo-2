@@ -6,3 +6,4 @@ but fully rewritten in Zig with advancements
 Other implementations
 - https://github.com/andrewrk/zig-vulkan-triangle
 - https://github.com/ashpil/moonshine
+- https://github.com/lonelydevil/vulkan-tutorial-C-implementation/blob/main/main.c

@@ -1,5 +1,6 @@
 .{
     .name = .vulkan_tech_demo_2,
+    .version = "0.0.0",
     .minimum_zig_version = "0.15.2",
     .dependencies = .{
         .vulkan_headers = .{
