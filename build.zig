@@ -34,6 +34,7 @@ pub fn build(b: *std.Build) void {
     // Modules
 
     const vulkanModule = createVulkanModule(b, target);
+    const glfwModule = createGlfwModule(b, target);
 
     // Executable
 
@@ -46,6 +47,7 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
             .imports = &[_]std.Build.Module.Import {
                 .{ .name = "vulkan", .module = vulkanModule },
+                .{ .name = "glfw", .module = glfwModule },
             },
         }),
     });
@@ -82,6 +84,17 @@ fn createVulkanModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Buil
     const vulkan_headers = b.dependency("vulkan_headers", .{});
     const step = b.addTranslateC(.{
         .root_source_file = vulkan_headers.path("include/vulkan/vulkan.h"),
+        .optimize = .ReleaseFast,
+        .target = target,
+    });
+    step.addIncludePath(vulkan_headers.path("include/"));
+
+    return step.createModule();
+}
+fn createGlfwModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Build.Module {
+    const vulkan_headers = b.dependency("glfw", .{});
+    const step = b.addTranslateC(.{
+        .root_source_file = vulkan_headers.path("include/GLFW/glfw3.h"),
         .optimize = .ReleaseFast,
         .target = target,
     });
