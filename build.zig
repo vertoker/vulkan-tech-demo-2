@@ -36,6 +36,11 @@ pub fn build(b: *std.Build) void {
     const vulkan_module = createVulkanModule(b, target, optimize);
     const glfw_module = createGlfwModule(b, target, optimize);
 
+    const imports = [_]std.Build.Module.Import {
+        .{ .name = "vulkan", .module = vulkan_module },
+        .{ .name = "glfw", .module = glfw_module },
+    };
+
     // Executable
 
     const exe = b.addExecutable(.{
@@ -45,10 +50,7 @@ pub fn build(b: *std.Build) void {
             // .link_libc = true,
             .target = target,
             .optimize = optimize,
-            .imports = &[_]std.Build.Module.Import {
-                .{ .name = "vulkan", .module = vulkan_module },
-                .{ .name = "glfw", .module = glfw_module },
-            },
+            .imports = &imports,
         }),
     });
 
@@ -127,15 +129,6 @@ fn createGlfwModule(b: *std.Build,
     module.linkLibrary(glfw.artifact("glfw"));
     return module;
 
-    // const vulkan_headers = b.dependency("glfw", .{});
-    // const step = b.addTranslateC(.{
-    //     .root_source_file = vulkan_headers.path("include/GLFW/glfw3.h"),
-    //     .optimize = .ReleaseFast,
-    //     .target = target,
-    // });
-    // step.addIncludePath(vulkan_headers.path("include/"));
-    // return step.createModule();
-
-    // actually old realization is worse, better not use it
+    // actually based on this
     // https://github.com/ashpil/moonshine/blob/0331657460af59c336dd9f31a21aa3b7315ec17b/build.zig#L602
 }
