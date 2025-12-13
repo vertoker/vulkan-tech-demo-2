@@ -1,9 +1,13 @@
+# Core
 .zig-cache/
 zig-out/
 
+# Files
 *.exe
 *.pdb
 *.o
+*.spv
 
+# IDE meta files
 .idea/
 .vs/
