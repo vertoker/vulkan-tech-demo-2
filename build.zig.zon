@@ -8,8 +8,8 @@
             .hash = "N-V-__8AAI-YKgKAmifzX8DTHUjTjfP7BmNncWcQYTaw9tpW",
         },
         .glfw = .{
-            .url = "git+https://github.com/glfw/glfw.git#dbadda26835ec5089ef922e6c290bcf58cf12056",
-            .hash = "N-V-__8AACgKSgBZuDlGX9ua8dZkoUYmxa3ienGJRyNYw-Jl",
+            .url = "git+https://github.com/vertoker/zig-glfw.git#6b5950498b5f3434bb14a9ba62cb6e3c9a2903a6",
+            .hash = "glfw-0.0.0-R5AeUlMJGgDlyrfdgspAQU49hfVYP3Lmj2Qkn3akrEOz",
         },
     },
     .paths = .{""},

@@ -33,8 +33,8 @@ pub fn build(b: *std.Build) void {
 
     // Modules
 
-    const vulkan_module = createVulkanModule(b, target);
-    const glfw_module = createGlfwModule(b, target);
+    const vulkan_module = createVulkanModule(b, target, optimize);
+    const glfw_module = createGlfwModule(b, target, optimize);
 
     // Executable
 
@@ -72,46 +72,70 @@ pub fn build(b: *std.Build) void {
     tests_step.dependOn(&run_exe_tests.step);
 }
 
-fn createModule(b: *std.Build, name: []const u8, path: []const u8, target: std.Build.ResolvedTarget) *std.Build.Module {
+fn createModule(b: *std.Build,
+    name: []const u8,
+    path: []const u8,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) *std.Build.Module {
     const module = b.addModule(name, .{
         .root_source_file = b.path(path),
         .target = target,
+        .optimize = optimize,
     });
     return module;
 }
 
-fn createVulkanModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Build.Module {
+fn createVulkanModule(b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) *std.Build.Module {
     const vulkan_headers = b.dependency("vulkan_headers", .{});
     const step = b.addTranslateC(.{
         .root_source_file = vulkan_headers.path("include/vulkan/vulkan.h"),
-        .optimize = .ReleaseFast,
         .target = target,
+        .optimize = optimize,
         .link_libc = true,
     });
     step.addIncludePath(vulkan_headers.path("include/"));
 
     return step.createModule();
 }
-fn createGlfwModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Build.Module {
-    const glfw = b.dependency("glfw", .{});
+fn createGlfwModule(b: *std.Build,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+) *std.Build.Module {
+    // GLFW for work must be build with CMake, better use custom Zig build script (aycb)
+    // https://ziggit.dev/t/best-way-to-combine-zig-and-cmake-projects/7466
+    // This approved by Andrew Kelley (author of Zig) and Aleksey Kladov (TigerBeetle maintainer)
+    // (actually I can use https://github.com/Batres3/zlfw)
+
+    const glfw = b.dependency("glfw", .{
+        .target = target,
+        .optimize = optimize,
+        // Additional options here
+    });
+
     const step = b.addTranslateC(.{
         .root_source_file = glfw.path("include/GLFW/glfw3.h"),
         .optimize = .ReleaseFast,
         .target = target,
-        .link_libc = true,
     });
+    step.addIncludePath(glfw.path("include/"));
 
     const module = step.createModule();
-    // module.addCSourceFiles(.{
-    //     .root = glfw.path(""),
-    //     .files =  &.{
-    //         "GLFW/glfw3.h",
-    //     },
-    //     .flags = &.{
-    //         // "GLFW_INCLUDE_VULKAN",
-    //     },
-    // });
-    module.addIncludePath(glfw.path("include/"));
-
+    module.linkLibrary(glfw.artifact("glfw"));
     return module;
+
+    // const vulkan_headers = b.dependency("glfw", .{});
+    // const step = b.addTranslateC(.{
+    //     .root_source_file = vulkan_headers.path("include/GLFW/glfw3.h"),
+    //     .optimize = .ReleaseFast,
+    //     .target = target,
+    // });
+    // step.addIncludePath(vulkan_headers.path("include/"));
+    // return step.createModule();
+
+    // actually old realization is worse, better not use it
+    // https://github.com/ashpil/moonshine/blob/0331657460af59c336dd9f31a21aa3b7315ec17b/build.zig#L602
 }
