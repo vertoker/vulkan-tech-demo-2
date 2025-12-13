@@ -33,8 +33,8 @@ pub fn build(b: *std.Build) void {
 
     // Modules
 
-    const vulkanModule = createVulkanModule(b, target);
-    const glfwModule = createGlfwModule(b, target);
+    const vulkan_module = createVulkanModule(b, target);
+    const glfw_module = createGlfwModule(b, target);
 
     // Executable
 
@@ -46,8 +46,8 @@ pub fn build(b: *std.Build) void {
             .target = target,
             .optimize = optimize,
             .imports = &[_]std.Build.Module.Import {
-                .{ .name = "vulkan", .module = vulkanModule },
-                .{ .name = "glfw", .module = glfwModule },
+                .{ .name = "vulkan", .module = vulkan_module },
+                .{ .name = "glfw", .module = glfw_module },
             },
         }),
     });
@@ -86,19 +86,32 @@ fn createVulkanModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Buil
         .root_source_file = vulkan_headers.path("include/vulkan/vulkan.h"),
         .optimize = .ReleaseFast,
         .target = target,
+        .link_libc = true,
     });
     step.addIncludePath(vulkan_headers.path("include/"));
 
     return step.createModule();
 }
 fn createGlfwModule(b: *std.Build, target: std.Build.ResolvedTarget) *std.Build.Module {
-    const vulkan_headers = b.dependency("glfw", .{});
+    const glfw = b.dependency("glfw", .{});
     const step = b.addTranslateC(.{
-        .root_source_file = vulkan_headers.path("include/GLFW/glfw3.h"),
+        .root_source_file = glfw.path("include/GLFW/glfw3.h"),
         .optimize = .ReleaseFast,
         .target = target,
+        .link_libc = true,
     });
-    step.addIncludePath(vulkan_headers.path("include/"));
 
-    return step.createModule();
+    const module = step.createModule();
+    // module.addCSourceFiles(.{
+    //     .root = glfw.path(""),
+    //     .files =  &.{
+    //         "GLFW/glfw3.h",
+    //     },
+    //     .flags = &.{
+    //         // "GLFW_INCLUDE_VULKAN",
+    //     },
+    // });
+    module.addIncludePath(glfw.path("include/"));
+
+    return module;
 }
