@@ -1,6 +1,25 @@
 const std = @import("std");
 const builtin = @import("builtin");
 
+const zig_version = std.SemanticVersion{
+    .major = 0,
+    .minor = 15,
+    .patch = 2,
+};
+
+comptime {
+    const zig_version_eq = zig_version.major == builtin.zig_version.major and
+        zig_version.minor == builtin.zig_version.minor and
+        (zig_version.patch == builtin.zig_version.patch);
+
+    if (!zig_version_eq) {
+        @compileError(std.fmt.comptimePrint(
+            "unsupported zig version: expected {f}, found {f}",
+            .{ zig_version, builtin.zig_version },
+        ));
+    }
+}
+
 pub fn build(b: *std.Build) void {
     // A compile error stack trace of 10 is arbitrary in size but helps with debugging (TigerBeetle)
     b.reference_trace = 10;
