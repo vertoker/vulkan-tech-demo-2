@@ -54,6 +54,8 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    // linkGlfwModule(b, exe, target, optimize);
+
     b.installArtifact(exe);
     const run_cmd = b.addRunArtifact(exe);
 
@@ -123,6 +125,8 @@ fn createGlfwModule(b: *std.Build,
         .optimize = .ReleaseFast,
         .target = target,
     });
+    step.defineCMacro("GLFW_INCLUDE_NONE", null);
+    // step.defineCMacro("GLFW_INCLUDE_VULKAN", null);
     step.addIncludePath(glfw.path("include/"));
 
     const module = step.createModule();

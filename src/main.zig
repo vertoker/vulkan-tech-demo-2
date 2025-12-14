@@ -1,20 +1,16 @@
 const std = @import("std");
-const vk = @import("vulkan");
-const glfw = @import("glfw");
+const engine = @import("engine.zig");
+const Window = engine.Window;
 
 pub fn main() !void {
     std.debug.print("Start App\n", .{});
 
-    if (glfw.glfwInit() != glfw.GLFW_TRUE) return error.InitFail;
-    defer glfw.glfwTerminate();
-
-    const handle = glfw.glfwCreateWindow(800, 600, "hello", null, null)
-        orelse return error.WindowCreateFail;
-    defer glfw.glfwDestroyWindow(handle);
+    const window = try Window.create(800, 600, "vulkan-tech-demo-2");
+    defer window.destroy();
 
     var frames_counter: u64 = 0;
-    while (glfw.glfwWindowShouldClose(handle) != glfw.GLFW_TRUE) {
-        glfw.glfwPollEvents();
+    while (!window.shouldClose()) {
+        Window.pollEvents();
         frames_counter += 1;
         // std.debug.print("Frame {}\n", .{frames_counter});
     }
