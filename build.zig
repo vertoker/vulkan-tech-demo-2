@@ -124,6 +124,7 @@ fn createGlfwModule(b: *std.Build,
         .root_source_file = glfw.path("include/GLFW/glfw3.h"),
         .optimize = .ReleaseFast,
         .target = target,
+        .link_libc = true,
     });
     step.defineCMacro("GLFW_INCLUDE_NONE", null);
     // step.defineCMacro("GLFW_INCLUDE_VULKAN", null);
