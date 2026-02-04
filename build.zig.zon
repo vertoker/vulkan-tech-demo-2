@@ -3,13 +3,17 @@
     .version = "0.0.0",
     .minimum_zig_version = "0.15.2",
     .dependencies = .{
-        .vulkan_headers = .{
-            .url = "git+https://github.com/KhronosGroup/Vulkan-Headers.git#8a1e5840e7833a90b79c3fddb639f57c3772a641",
-            .hash = "N-V-__8AAI-YKgKAmifzX8DTHUjTjfP7BmNncWcQYTaw9tpW",
-        },
         .glfw = .{
             .url = "git+https://github.com/vertoker/zig-glfw.git#6b5950498b5f3434bb14a9ba62cb6e3c9a2903a6",
             .hash = "glfw-0.0.0-R5AeUlMJGgDlyrfdgspAQU49hfVYP3Lmj2Qkn3akrEOz",
+        },
+        .vulkan_headers = .{
+            .url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/v1.3.283.tar.gz",
+            .hash = "N-V-__8AAI-YKgKAmifzX8DTHUjTjfP7BmNncWcQYTaw9tpW",
+        },
+        .vulkan_zig = .{
+            .url = "git+https://github.com/Snektron/vulkan-zig.git#1440d70e8c429442c47db473c7e7d52a00efff61",
+            .hash = "vulkan-0.0.0-r7Ytx5lJAwBhmqUzXDEe8-zQWD_P2jn4pcl5viXznW3m",
         },
     },
     .paths = .{""},

@@ -12,17 +12,19 @@ const Errors = error {
 };
 
 pub fn create(enableValidationLayers: bool) Errors!vk.VkInstance {
-    if (enableValidationLayers and try !vkExtensions.chechValidationLayerSupport())
-        return Errors.ValidationLayersNotAvailable;
+    if (enableValidationLayers) {
+        const support = try vkExtensions.chechValidationLayerSupport();
+        if (!support) return Errors.ValidationLayersNotAvailable;
+    }
 
-    const appInfo: vk.VkApplicationInfo = .{};
+    var appInfo: vk.VkApplicationInfo = .{};
     appInfo.sType = vk.VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "vulkan-tect-demo-2 app";
     appInfo.applicationVersion = vk.VK_MAKE_API_VERSION(1, 0, 0, 0);
     appInfo.pEngineName = "vulkan-tech-demo-2 engine";
     appInfo.engineVersion = vk.VK_MAKE_API_VERSION(1, 0, 0, 0);
 
-    const createInfo: vk.VkInstanceCreateInfo = .{};
+    var createInfo: vk.VkInstanceCreateInfo = .{};
     createInfo.sType = vk.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
@@ -30,8 +32,8 @@ pub fn create(enableValidationLayers: bool) Errors!vk.VkInstance {
         // createInfo.enabledLayerCount =
     }
 
-    const instance: vk.VkInstance = undefined;
-    if (!vk.vkCreateInstance(&createInfo, null, &instance)) {
+    var instance: vk.VkInstance = undefined;
+    if (vk.vkCreateInstance(&createInfo, null, &instance) != vk.VK_SUCCESS) {
         return Errors.FailedToCreateVkInstance;
     }
 

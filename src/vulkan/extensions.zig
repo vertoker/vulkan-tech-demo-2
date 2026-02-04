@@ -1,7 +1,7 @@
 const std = @import("std");
 const vk = @import("vulkan");
 
-const validationLayers = [_][:0]const u8 {
+const validationLayers = [_][]const u8 {
     "VK_LAYER_KHRONOS_validation",
 };
 
@@ -12,7 +12,7 @@ const Errors = error {
 
 pub fn chechValidationLayerSupport() Errors!bool {
     var layerCount: u32 = 0;
-    const vkResult = vk.vkEnumerateInstanceLayerProperties(&layerCount, null);
+    var vkResult = vk.vkEnumerateInstanceLayerProperties(&layerCount, null);
     if (vkResult != vk.VK_SUCCESS)
         return Errors.CantEnumerateInstanceLayerProperties;
     
@@ -21,15 +21,15 @@ pub fn chechValidationLayerSupport() Errors!bool {
         .initCapacity(std.heap.page_allocator, layerCount);
     defer availableLayers.deinit(std.heap.page_allocator);
 
-    vkResult = vk.vkEnumerateInstanceLayerProperties(&layerCount, &availableLayers.items);
+    vkResult = vk.vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.items.ptr);
     if (vkResult != vk.VK_SUCCESS)
         return Errors.CantEnumerateInstanceLayerProperties;
 
-    for (validationLayers) |*layerName| {
+    for (validationLayers) |layerName| {
         var layerFound = false;
 
         for (availableLayers.items) |*layerProperties| {
-            if (std.mem.eql(u8, layerProperties.layerName, layerName)) {
+            if (std.mem.eql(u8, &layerProperties.layerName, layerName)) {
                 layerFound = true;
                 break;
             }

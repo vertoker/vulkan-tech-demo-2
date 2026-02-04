@@ -3,8 +3,8 @@ const builtin = @import("builtin");
 
 const zig_version = std.SemanticVersion{
     .major = 0,
-    .minor = 15,
-    .patch = 2,
+    .minor = 16,
+    .patch = 0,
 };
 
 comptime {
@@ -47,11 +47,13 @@ pub fn build(b: *std.Build) void {
         .name = app_name,
         .root_module = b.createModule(.{
             .root_source_file = b.path(root_source_file),
-            // .link_libc = true,
+            .link_libc = true,
             .target = target,
             .optimize = optimize,
             .imports = &imports,
         }),
+        // TODO: Remove this once x86_64 is stable
+        .use_llvm = true,
     });
 
     // linkGlfwModule(b, exe, target, optimize);
@@ -93,18 +95,20 @@ fn createModule(b: *std.Build,
 fn createVulkanModule(b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
+// ) void {
 ) *std.Build.Module {
-    const vulkan_headers = b.dependency("vulkan_headers", .{});
-    const step = b.addTranslateC(.{
-        .root_source_file = vulkan_headers.path("include/vulkan/vulkan.h"),
+    const vulkan_headers = b.dependency("vulkan_headers", .{
         .target = target,
         .optimize = optimize,
-        .link_libc = true,
     });
-    step.addIncludePath(vulkan_headers.path("include/"));
+    const registry = vulkan_headers.path("registry/vk.xml");
 
-    return step.createModule();
+    const vulkan = b.dependency("vulkan_zig", .{.registry = registry});
+    const module = vulkan.module("vulkan-zig");
+
+    return module;
 }
+
 fn createGlfwModule(b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
@@ -119,7 +123,6 @@ fn createGlfwModule(b: *std.Build,
         .optimize = optimize,
         // Additional options here
     });
-
     const step = b.addTranslateC(.{
         .root_source_file = glfw.path("include/GLFW/glfw3.h"),
         .optimize = .ReleaseFast,
