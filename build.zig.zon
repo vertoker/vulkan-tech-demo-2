@@ -1,11 +1,11 @@
 .{
     .name = .vulkan_tech_demo_2,
     .version = "0.0.0",
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .glfw = .{
-            .url = "git+https://github.com/vertoker/zig-glfw.git#6b5950498b5f3434bb14a9ba62cb6e3c9a2903a6",
-            .hash = "glfw-0.0.0-R5AeUlMJGgDlyrfdgspAQU49hfVYP3Lmj2Qkn3akrEOz",
+            .url = "git+https://github.com/allyourcodebase/glfw.git#79e7ba3d082765954b59c4f11a2f9b4ff1ecb350",
+            .hash = "glfw-0.0.0-R5AeUo0JGgBvENV2Oz-u0V_unpWhEJTfK4qckBH5da6e",
         },
         .vulkan_headers = .{
             .url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/v1.3.283.tar.gz",
